@@ -21,14 +21,20 @@ Project is created with:
 ## Installation
 1. Install the package using pip:
 ```
-pip install git+https://github.com/dovilez/IMDb-scraper
+pip install git+https://github.com/dovilez/IMDbscraper
 ```
 2. Import the scraper module:
 ```
-from IMDb-scraper.scraping import imdbscrape
+from scraping import scraper
 ```
 
 ## Code Examples
+Specify the genres and number of movies to scrape, then use collect_keywords function:
+```
+search_words = ['action', 'comedy', 'sci-fi', 'horror']
+number_of_movies = 100
+df = scraping.collect_keywords(search_words, number_of_movies)
+```
 
 
 ## Status

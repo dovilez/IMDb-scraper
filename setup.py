@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="imdb-scraper",
+    name="imdbscraper",
     version="0.0.1",
     author="dzalta",
     author_email="dovilezal@gmail.com",
     description="IMDb scraper",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dovilez/IMDb-scraper",
+    url="https://github.com/dovilez/IMDbscraper",
     packages=setuptools.find_packages(),
     install_requires=[
         'pandas', 'beautifulsoup4'

@@ -23,7 +23,7 @@ Project is created with:
 ```
 pip install git+https://github.com/dovilez/IMDbscraper
 ```
-2. Import the scraper module:
+2. Import the scraping module:
 ```
 from scraping import scraping
 ```

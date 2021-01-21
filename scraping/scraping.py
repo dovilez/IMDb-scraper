@@ -26,7 +26,9 @@ def collect_information(keyword: str, item_number: int) -> pd.DataFrame:
             header = item.find("h3", class_="lister-item-header")
             titles.append(header.find("a").text.replace("\n", ""))
             years.append(
-                header.find("span", class_="lister-item-year").text.replace("\n", "")
+                header.find("span", class_="lister-item-year").text.replace(
+                    "\n", ""
+                )
             )
             genres.append(item.find("span", class_="genre").text.replace("\n", ","))
 
@@ -69,7 +71,6 @@ def collect_information(keyword: str, item_number: int) -> pd.DataFrame:
         }
     )
 
-
 def process_data(df):
     """
     :param df: DataFrame to process
@@ -81,7 +82,6 @@ def process_data(df):
     df["genre"] = df["genre"].replace(regex={r"\s+": ""})
     df["genre"] = df["genre"].str.split(",")
     return df
-
 
 def collect_keywords(keywords, item_number) -> pd.DataFrame:
     """

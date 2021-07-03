@@ -24,6 +24,7 @@ def collect_information(keyword: str, item_number: int) -> pd.DataFrame:
         df = df.append(df_page)
     return df
 
+
 def collect_page_information(soup: BeautifulSoup) -> pd.DataFrame:
     """
     Scrape the information from one page
@@ -38,9 +39,7 @@ def collect_page_information(soup: BeautifulSoup) -> pd.DataFrame:
         header = item.find("h3", class_="lister-item-header")
         titles.append(header.find("a").text.replace("\n", ""))
         years.append(
-            header.find("span", class_="lister-item-year").text.replace(
-                "\n", ""
-            )
+            header.find("span", class_="lister-item-year").text.replace("\n", "")
         )
         genres.append(item.find("span", class_="genre").text.replace("\n", ","))
 
@@ -70,7 +69,6 @@ def collect_page_information(soup: BeautifulSoup) -> pd.DataFrame:
 
         pictures.append(item.find("img", class_="loadlate")["src"])
 
-
     return pd.DataFrame(
         {
             "title": titles,
@@ -84,6 +82,7 @@ def collect_page_information(soup: BeautifulSoup) -> pd.DataFrame:
         }
     )
 
+
 def process_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     :param df: DataFrame to process
@@ -95,6 +94,7 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
     df["genre"] = df["genre"].replace(regex={r"\s+": ""})
     df["genre"] = df["genre"].str.split(",")
     return df
+
 
 def collect_keywords(keywords: List[str], item_number: int) -> pd.DataFrame:
     """

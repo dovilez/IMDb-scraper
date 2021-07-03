@@ -2,18 +2,17 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import math
+from typing import List
 
 
 def collect_information(keyword: str, item_number: int) -> pd.DataFrame:
     """
     Scrape information about the movies of a given genre
     :param keyword: The movie genre to scrape
-    :param item_number: The number of items to scrape
+    :param item_number: The number of items to scrape from each genre
     :return: The dataframe with the information about scraped items
     """
-    titles, years, ratings, genres, durations, IMDb_ratings, plots, pictures = (
-        [] for i in range(8)
-    )
+    df = pd.DataFrame()
     pages_number = math.ceil(item_number / 50)
     for page_no in range(0, pages_number):
         page = requests.get(
@@ -21,42 +20,56 @@ def collect_information(keyword: str, item_number: int) -> pd.DataFrame:
             headers={"User-Agent": "Mozilla/5.0"},
         )
         soup = BeautifulSoup(page.content, "html.parser")
+        df_page = collect_page_information(soup)
+        df = df.append(df_page)
+    return df
 
-        for item in soup.find_all("div", class_="lister-item"):
-            header = item.find("h3", class_="lister-item-header")
-            titles.append(header.find("a").text.replace("\n", ""))
-            years.append(
-                header.find("span", class_="lister-item-year").text.replace(
-                    "\n", ""
-                )
+def collect_page_information(soup: BeautifulSoup) -> pd.DataFrame:
+    """
+    Scrape the information from one page
+    :param soup: the soup object of one page
+    :return: The dataframe with the information about scraped items from one soup object (page)
+    """
+    titles, years, ratings, genres, durations, IMDb_ratings, plots, pictures = (
+        [] for i in range(8)
+    )
+
+    for item in soup.find_all("div", class_="lister-item"):
+        header = item.find("h3", class_="lister-item-header")
+        titles.append(header.find("a").text.replace("\n", ""))
+        years.append(
+            header.find("span", class_="lister-item-year").text.replace(
+                "\n", ""
             )
-            genres.append(item.find("span", class_="genre").text.replace("\n", ","))
+        )
+        genres.append(item.find("span", class_="genre").text.replace("\n", ","))
 
-            duration = item.find("span", class_="runtime")
-            if duration:
-                durations.append(duration.text.replace("\n", ""))
-            else:
-                durations.append("")
+        duration = item.find("span", class_="runtime")
+        if duration:
+            durations.append(duration.text.replace("\n", ""))
+        else:
+            durations.append("")
 
-            imdb_r = item.find("div", class_="ratings-imdb-rating")
-            if imdb_r:
-                IMDb_ratings.append(imdb_r.text.replace("\n", ""))
-            else:
-                IMDb_ratings.append("")
+        imdb_r = item.find("div", class_="ratings-imdb-rating")
+        if imdb_r:
+            IMDb_ratings.append(imdb_r.text.replace("\n", ""))
+        else:
+            IMDb_ratings.append("")
 
-            rating = item.find("span", class_="certificate")
-            if rating:
-                ratings.append(rating.text.replace("\n", ""))
-            else:
-                ratings.append("")
+        rating = item.find("span", class_="certificate")
+        if rating:
+            ratings.append(rating.text.replace("\n", ""))
+        else:
+            ratings.append("")
 
-            p = item.find_all("p", class_="text-muted")
-            if p[1]:
-                plots.append(p[1].text.replace("\n", ","))
-            else:
-                plots.append("")
+        p = item.find_all("p", class_="text-muted")
+        if p[1]:
+            plots.append(p[1].text.replace("\n", ","))
+        else:
+            plots.append("")
 
-            pictures.append(item.find("img", class_="loadlate")["src"])
+        pictures.append(item.find("img", class_="loadlate")["src"])
+
 
     return pd.DataFrame(
         {
@@ -71,7 +84,7 @@ def collect_information(keyword: str, item_number: int) -> pd.DataFrame:
         }
     )
 
-def process_data(df):
+def process_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     :param df: DataFrame to process
     :return: processed DataFrame
@@ -83,7 +96,7 @@ def process_data(df):
     df["genre"] = df["genre"].str.split(",")
     return df
 
-def collect_keywords(keywords, item_number) -> pd.DataFrame:
+def collect_keywords(keywords: List[str], item_number: int) -> pd.DataFrame:
     """
     Scrape information from all genres and combine dataframes
     :param keywords: The list of movie genres to scrape
